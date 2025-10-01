@@ -7,10 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-chave-temporaria-para-emergencia')
 
-# DEBUG = False # Manteremos como False para o ambiente de produção
-# Para testar no Codespaces, você pode mudar temporariamente para True
+# Lembre-se de mudar para False antes do deploy final, se estiver testando no Codespaces.
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-
 
 ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1', '.github.dev']
 
@@ -27,6 +25,7 @@ INSTALLED_APPS = [
     'questoes.apps.QuestoesConfig',
 ]
 
+# ... (Middleware, Root_URLConf, Templates, WSGI, Databases, Auth_Password_Validators - sem alterações) ...
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -36,9 +35,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'gerador_provas.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -54,16 +51,13 @@ TEMPLATES = [
         },
     },
 ]
-
 WSGI_APPLICATION = 'gerador_provas.wsgi.application'
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
     { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
@@ -71,48 +65,46 @@ AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
+
+# Internationalization
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Recife'
 USE_I18N = True
 USE_TZ = True
 
+
+# Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
+# Adicionamos esta linha para dizer ao Django onde encontrar a pasta 'static' da nossa app.
+STATICFILES_DIRS = [
+    BASE_DIR / 'questoes/static',
+]
+
+
+# Media files (User uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ... (Jazzmin Settings e UI Tweaks - sem alterações) ...
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com', 'https://*.github.dev']
-
-
-# --- CONFIGURAÇÕES DO JAZZMIN ATUALIZADAS ---
-
 JAZZMIN_SETTINGS = {
     "site_title": "Gerador de Provas",
     "site_header": "Gerador Provas",
     "site_brand": "Medicina UNIPÊ",
-    
-    # Logo para o painel interno (canto superior esquerdo)
     "site_logo": "images/naped.jpg",
-
-    # --- ALTERAÇÃO 1: LOGO DA TELA DE LOGIN ---
-    # Especificamos o 'logo.jpg' para a tela de login.
     "login_logo": "images/logo.jpg",
-
-    # --- ALTERAÇÃO 2: TAMANHO MÁXIMO DO LOGO ---
-    # Controlamos o tamanho do logo na tela de login para que não fique gigante.
-    # Ajuste o valor '250px' se desejar um tamanho diferente.
     "login_logo_max_size": "250px",
-
     "welcome_sign": "Bem-vindo ao Gerador de Provas do curso de Medicina",
     "copyright": "Medicina UNIPÊ",
-    
     "custom_css": "css/admin_custom.css",
 }
-
 JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
     "body_classes": "gradient-bg",
