@@ -7,16 +7,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-chave-temporaria-para-emergencia')
 
-DEBUG = True # Mantenha True no Codespaces, mudaremos para False antes do deploy final
+DEBUG = True 
 
 ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1', '.github.dev']
 
 
 # Application definition
 INSTALLED_APPS = [
-    # --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
-    # Adicionamos o 'jazzmin' ANTES do admin do Django. A ordem é importante.
-    'jazzmin',
+    'jazzmin', # Jazzmin deve vir antes do admin
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -87,21 +85,25 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com', 'https://*.github.dev']
 
 
-# --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
-# Adicionamos as configurações de aparência do Jazzmin.
+# --- CONFIGURAÇÕES AVANÇADAS DO JAZZMIN ---
+
 JAZZMIN_SETTINGS = {
-    # Título da sua janela de login do admin (ex: "Entrar | Gerador de Provas")
     "site_title": "Gerador de Provas",
-
-    # Texto no topo da página de login e do painel
-    "site_header": "Gerador de Provas UNIPÊ",
-
-    # Texto no canto superior esquerdo (substituído pelo logo se definido)
+    "site_header": "Gerador Provas",
     "site_brand": "Medicina UNIPÊ",
-
-    # Caminho para o logo (relativo à pasta 'static/')
     "site_logo": "images/naped.jpg",
-
-    # Texto de boas-vindas na tela de login
+    "login_logo": "images/logo.jpg",
     "welcome_sign": "Bem-vindo ao Gerador de Provas do curso de Medicina",
+    "copyright": "Medicina UNIPÊ",
+    
+    # Esta linha diz ao Jazzmin para carregar um arquivo CSS personalizado.
+    "custom_css": "css/admin_custom.css",
+}
+
+JAZZMIN_UI_TWEAKS = {
+    # Usamos um tema escuro como base, que combina melhor com o gradiente.
+    "theme": "darkly",
+    
+    # Esta é a parte importante: adicionamos a classe 'gradient-bg' ao corpo do admin.
+    "body_classes": "gradient-bg",
 }
