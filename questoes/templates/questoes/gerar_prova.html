@@ -1,58 +1,104 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerar Prova Integrada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE', secondary: '#0056b3', accent: '#28a745'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; margin: 2em; }
-        .container { max-width: 600px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 8px; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9); }
+        .dark .glass-effect { background: rgba(31, 41, 55, 0.9); }
         /* Aumentamos a altura dos seletores múltiplos para melhor usabilidade */
-        select[multiple] { height: 150px; }
-        select, button { width: 100%; padding: 10px; margin-top: 10px; }
-        .help-text { font-size: 0.8em; color: #555; }
+        select[multiple] { height: 200px; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1>Gerador de Provas Integradas</h1>
-        <p>Selecione um ou mais Períodos e, em seguida, um ou mais Componentes Curriculares para gerar a prova.</p>
-        
-        <form action="{% url 'prova_gerada' %}" method="GET" target="_blank">
-            <div>
-                <label for="periodos">Período(s):</label>
-                <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar mais de um.</p>
-                <select id="periodos" name="periodos" multiple>
-                    {% for p in periodos %}
-                        <option value="{{ p.id }}">{{ p.nome }}</option>
-                    {% endfor %}
-                </select>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen gradient-bg">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex-shrink-0">
+                    <img src="{% static 'images/logo.jpg' %}" alt="Logo Institucional" class="h-16 w-auto object-contain">
+                </div>
+                <div class="text-center flex-1 mx-8">
+                    <h1 class="text-4xl font-bold text-white mb-4">Gerador de Provas</h1>
+                    <p class="text-white/80 text-lg">Área do Administrador</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="{% static 'images/naped.jpg' %}" alt="Logo NAPED" class="h-16 w-auto object-contain">
+                </div>
             </div>
-            <div style="margin-top: 1em;">
-                <label for="componentes">Componente(s) Curricular(es):</label>
-                <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar mais de um.</p>
-                <select id="componentes" name="componentes" multiple required>
-                    <option value="" disabled>--- Selecione um ou mais períodos ---</option>
-                </select>
+
+            <div class="max-w-4xl mx-auto">
+                <form action="{% url 'prova_gerada' %}" method="GET" target="_blank" class="space-y-8">
+                    
+                    <div class="glass-effect rounded-2xl p-8 shadow-xl border border-white/20">
+                        <div class="text-center mb-8">
+                            <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Gerar Prova Integrada</h2>
+                            <p class="text-gray-600 dark:text-gray-300 mt-2">Selecione os Períodos e Componentes para montar a avaliação.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div class="space-y-2">
+                                <label for="periodos" class="block text-sm font-medium text-gray-700 dark:text-gray-300">1. Selecione o(s) Período(s)</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Segure Ctrl (ou Cmd no Mac) para selecionar mais de um.</p>
+                                <select id="periodos" name="periodos" multiple class="w-full text-base px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200">
+                                    {% for p in periodos %}
+                                        <option value="{{ p.id }}">{{ p.nome }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <label for="componentes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">2. Selecione o(s) Componente(s)</label>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">A lista será preenchida após selecionar os períodos.</p>
+                                <select id="componentes" name="componentes" multiple required class="w-full text-base px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200">
+                                    <option value="" disabled>--- Selecione um ou mais períodos ---</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-center pt-8 mt-4">
+                            <button type="submit" class="px-8 py-4 bg-gradient-to-r from-accent to-green-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center space-x-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                <span>Gerar Prova</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <button type="submit" style="margin-top: 2em;">Gerar Prova</button>
-        </form>
+        </div>
     </div>
 
     <script>
+        // O JavaScript continua o mesmo, apenas o HTML e CSS foram alterados.
         document.getElementById('periodos').addEventListener('change', function() {
-            // Pega todos os IDs dos períodos selecionados
             const periodosSelecionados = Array.from(this.selectedOptions).map(option => option.value);
             const seletorComponente = document.getElementById('componentes');
             seletorComponente.innerHTML = '<option value="" disabled>--- Carregando... ---</option>';
 
             if (periodosSelecionados.length > 0) {
-                // Junta os IDs em uma string separada por vírgula (ex: "1,2,3")
                 const idsQuery = periodosSelecionados.join(',');
-                // A URL da API agora aceitará múltiplos IDs
                 fetch(`/app/api/get-componentes/?periodo_ids=${idsQuery}`)
                     .then(response => response.json())
                     .then(data => {
-                        seletorComponente.innerHTML = ''; // Limpa o seletor
+                        seletorComponente.innerHTML = '';
                         data.forEach(function(componente) {
                             const option = new Option(componente.nome, componente.id);
                             seletorComponente.add(option);
