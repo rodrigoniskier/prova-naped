@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gabarito da Prova</title>
+    <style>
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print { 
+                display: none; 
+            }
+        }
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 12pt; 
+            line-height: 1.5; 
+        }
+        .container { 
+            width: 21cm; 
+            min-height: 29.7cm;
+            padding: 2cm;
+            margin: 1cm auto; 
+            box-sizing: border-box;
+        }
+        .cabecalho { 
+            text-align: center; 
+            border-bottom: 1px solid black; 
+            padding-bottom: 10px; 
+        }
+        .questao { 
+            margin-bottom: 2.5em; 
+            page-break-inside: avoid; 
+        }
+        .alternativas { 
+            list-style-type: upper-alpha; 
+            padding-left: 20px; 
+        }
+        /* Esta é a classe que destaca a resposta correta */
+        .alternativa-correta { 
+            font-weight: bold; 
+            background-color: #e0e0e0; 
+        }
+        /* Esta é a classe que formata a caixa de justificativa */
+        .justificativa { 
+            border-left: 4px solid #888; 
+            padding: 0.5em 1em; 
+            margin-top: 1em; 
+            background-color: #f5f5f5; 
+            font-style: italic;
+            font-size: 11pt;
+        }
+        img { 
+            max-width: 80%; 
+            height: auto; 
+            display: block; 
+            margin: 1em auto; 
+        }
+        hr { 
+            border: 0; 
+            border-top: 1px dashed #ccc; 
+            margin: 2em 0;
+        }
+        .button-link {
+            display: inline-block;
+            margin-top: 2em;
+            padding: 10px 20px;
+            font-size: 14pt;
+            font-family: sans-serif;
+            text-decoration: none;
+            border: 1px solid black;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cabecalho">
+            <h2>GABARITO COMENTADO</h2>
+            <h3>
+                Componente(s):
+                {% for c in componentes %}
+                    {{ c.nome }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </h3>
+        </div>
+
+        <div style="margin: 20px 0;"></div>
+
+        {% for questao in questoes_ordenadas %}
+            <div class="questao">
+                <p><strong>QUESTÃO {{ forloop.counter }}:</strong> {{ questao.enunciado|linebreaksbr }}</p>
+
+                <ol class="alternativas">
+                    {% for alternativa in questao.alternativas.all %}
+                        <li class="{% if alternativa.eh_correta %}alternativa-correta{% endif %}">
+                            {{ alternativa.texto }}
+                        </li>
+                    {% endfor %}
+                </ol>
+
+                <div class="justificativa">
+                    <p><strong>Justificativa:</strong> {{ questao.justificativa|linebreaksbr }}</p>
+                </div>
+            </div>
+            {% if not forloop.last %}<hr>{% endif %}
+        {% endfor %}
+        
+        <div class="no-print" style="text-align: center;">
+            <button onclick="window.print()" class="button-link" style="background-color: #f0f0f0;">Imprimir Gabarito</button>
+        </div>
+    </div>
+</body>
+</html>

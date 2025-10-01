@@ -1,0 +1,256 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questões para Prova Integrada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5D5CDE', secondary: '#0056b3', accent: '#28a745'
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .glass-effect { backdrop-filter: blur(10px); background: rgba(255, 255, 255, 0.9); }
+        .dark .glass-effect { background: rgba(31, 41, 55, 0.9); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .dark .custom-scrollbar::-webkit-scrollbar-track { background: #374151; }
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #6b7280; }
+        .example-box { background-color: rgba(0,0,0,0.05); padding: 1em; border-radius: 8px; font-size: 0.9em; border: 1px solid rgba(0,0,0,0.08); }
+        .dark .example-box { background-color: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div class="min-h-screen gradient-bg">
+        <div class="container mx-auto px-4 py-8">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex-shrink-0">
+                    <img src="{% static 'images/logo.jpg' %}" alt="Logo Institucional" class="h-16 w-auto object-contain">
+                </div>
+                <div class="text-center flex-1 mx-8">
+                    <h1 class="text-4xl font-bold text-white mb-4">Questões para Prova Integrada</h1>
+                    <p class="text-white/80 text-lg">Sistema Acadêmico de Gestão de Questões</p>
+                </div>
+                <div class="flex-shrink-0">
+                    <img src="{% static 'images/naped.jpg' %}" alt="Logo NAPED" class="h-16 w-auto object-contain">
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto">
+                <div class="glass-effect rounded-2xl p-6 mb-8 shadow-xl border border-white/20">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Olá, professor(a)!</h3>
+                            <p class="text-gray-700 dark:text-gray-300 mb-3">Para submeter uma nova questão, é obrigatório o preenchimento de todos os campos e o aceite de todos os checklists nas guias laterais. O anexo de Imagem é opcional.</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 italic">Esta aplicação foi desenvolvida com muito carinho pelo Núcleo de Apoio Pedagógico e Experiência Docente (NAPED) do curso de Medicina do UNIPÊ.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="form-questao" enctype="multipart/form-data" class="space-y-8">
+                    {% csrf_token %}
+
+                    <div class="glass-effect rounded-2xl p-6 shadow-xl border border-white/20">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                            <div class="lg:col-span-2 space-y-6">
+                                <div>
+                                    <div class="flex items-center space-x-3 mb-4">
+                                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">1</div>
+                                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Selecionar Período</h2>
+                                    </div>
+                                    <select name="periodo_selector" id="id_periodo_selector" class="w-full text-base px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white transition-all duration-200">
+                                        <option value="">--- Selecione um Período ---</option>
+                                        {% for periodo in periodos %}
+                                            <option value="{{ periodo.id }}">{{ periodo.nome }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div id="bloco-componente" class="hidden">
+                                    <div class="flex items-center space-x-3 mb-4">
+                                        <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white font-bold text-sm">2</div>
+                                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Componente Curricular</h2>
+                                    </div>
+                                    {{ questao_form.componente }}
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
+                                <h4 class="font-semibold text-blue-900 dark:text-blue-100 mb-3">Passos Iniciais</h4>
+                                <p class="text-blue-800 dark:text-blue-200 text-sm"><b>1.</b> Selecione o período para listar os componentes curriculares.</p>
+                                <p class="text-blue-800 dark:text-blue-200 text-sm mt-2"><b>2.</b> Em seguida, selecione o componente. O formulário para submeter uma nova questão e o histórico de questões já enviadas aparecerão.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="bloco-historico" class="hidden glass-effect rounded-2xl p-6 shadow-xl border border-white/20">
+                        <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Histórico de Questões Submetidas</h2>
+                        <div id="historico-container" class="space-y-4 max-h-96 overflow-y-auto custom-scrollbar pr-4">
+                            <p class="text-gray-500">Selecione um componente para ver o histórico.</p>
+                        </div>
+                    </div>
+
+                    <div id="bloco-questao" class="space-y-8 hidden">
+                        {% include "questoes/partials/form_fields.html" %}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Dark mode support
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) { document.documentElement.classList.add('dark'); }
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+            if (event.matches) { document.documentElement.classList.add('dark'); } 
+            else { document.documentElement.classList.remove('dark'); }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- SELEÇÃO DOS ELEMENTOS ---
+            const seletorPeriodo = document.getElementById('id_periodo_selector');
+            const seletorComponente = document.getElementById('id_componente');
+            const blocoComponente = document.getElementById('bloco-componente');
+            const blocoQuestao = document.getElementById('bloco-questao');
+            const blocoHistorico = document.getElementById('bloco-historico');
+            const historicoContainer = document.getElementById('historico-container');
+            const botaoSubmit = document.getElementById('botao-submit');
+
+            [blocoComponente, blocoQuestao, blocoHistorico].forEach(el => {
+                if(el) {
+                    el.style.opacity = '0';
+                    el.style.transform = 'translateY(20px)';
+                    el.style.transition = 'all 0.3s ease-out';
+                }
+            });
+            
+            // --- LÓGICA DE EXIBIÇÃO DOS BLOCOS ---
+            seletorPeriodo.addEventListener('change', function() {
+                const periodoId = this.value;
+                if (seletorComponente) {
+                    seletorComponente.innerHTML = '<option value="">---------</option>';
+                }
+                blocoComponente.classList.add('hidden');
+                blocoQuestao.classList.add('hidden');
+                blocoHistorico.classList.add('hidden');
+
+                if (periodoId) {
+                    fetch(`/app/api/get-componentes/?periodo_id=${periodoId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (seletorComponente) {
+                                data.forEach(function(componente) {
+                                    const option = new Option(componente.nome, componente.id);
+                                    seletorComponente.add(option);
+                                });
+                            }
+                            blocoComponente.classList.remove('hidden');
+                            setTimeout(() => {
+                                blocoComponente.style.opacity = '1';
+                                blocoComponente.style.transform = 'translateY(0)';
+                            }, 10);
+                        });
+                }
+            });
+
+            if (seletorComponente) {
+                seletorComponente.addEventListener('change', function() {
+                    const componenteId = this.value;
+                    
+                    if (componenteId) {
+                        // Mostra o formulário e o histórico
+                        [blocoQuestao, blocoHistorico].forEach(el => {
+                            el.classList.remove('hidden');
+                            setTimeout(() => { el.style.opacity = '1'; el.style.transform = 'translateY(0)'; }, 10);
+                        });
+                        
+                        // Busca e preenche o histórico
+                        historicoContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Carregando histórico...</p>';
+                        fetch(`/app/api/get-historico/?componente_id=${componenteId}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                historicoContainer.innerHTML = '';
+                                if (data.length === 0) {
+                                    historicoContainer.innerHTML = '<p class="text-gray-500 dark:text-gray-400">Nenhuma questão foi submetida para este componente ainda.</p>';
+                                } else {
+                                    data.forEach(function(questao) {
+                                        let statusBadge;
+                                        switch (questao.status) {
+                                            case 'APROVADA':
+                                                statusBadge = '<span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">Aprovada</span>';
+                                                break;
+                                            case 'REPROVADA':
+                                                statusBadge = '<span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">Reprovada</span>';
+                                                break;
+                                            default:
+                                                statusBadge = '<span class="text-xs font-medium px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">Pendente</span>';
+                                        }
+                                        const questaoCard = `<div class="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm flex justify-between items-center"><p class="text-sm text-gray-700 dark:text-gray-300 truncate pr-4">${questao.enunciado}</p>${statusBadge}</div>`;
+                                        historicoContainer.innerHTML += questaoCard;
+                                    });
+                                }
+                            });
+                    } else {
+                        blocoQuestao.classList.add('hidden');
+                        blocoHistorico.classList.add('hidden');
+                    }
+                    verificarFormulario();
+                });
+            }
+
+            // --- LÓGICA DE VALIDAÇÃO DO BOTÃO SUBMIT (CORRIGIDA) ---
+            function verificarFormulario() {
+                // Seleciona os campos e checklists toda vez que a função é chamada.
+                // Isso garante que ele encontre os campos mesmo que eles apareçam depois (no blocoQuestao).
+                const camposObrigatorios = [
+                    document.querySelector('[name="texto_base"]'),
+                    document.querySelector('[name="enunciado"]'),
+                    document.querySelector('[name="justificativa"]')
+                ];
+                const checklists = document.querySelectorAll('.checklist-item');
+
+                const componenteSelecionado = seletorComponente && seletorComponente.value !== '';
+                
+                // Verifica se todos os campos obrigatórios estão preenchidos
+                const todosCamposPreenchidos = camposObrigatorios.every(campo => campo && campo.value.trim() !== '');
+
+                // Verifica se todos os checklists estão marcados
+                const todosChecklistsMarcados = Array.from(checklists).every(check => check.checked);
+                
+                // Habilita o botão apenas se todas as condições forem verdadeiras
+                if (componenteSelecionado && todosCamposPreenchidos && todosChecklistsMarcados) {
+                    botaoSubmit.disabled = false;
+                } else {
+                    botaoSubmit.disabled = true;
+                }
+            }
+
+            // Adiciona um "ouvinte" geral ao formulário.
+            // Isso é mais eficiente e garante que qualquer mudança, em qualquer campo,
+            // acione a verificação.
+            const form = document.getElementById('form-questao');
+            if(form){
+                form.addEventListener('input', verificarFormulario);
+                form.addEventListener('change', verificarFormulario);
+            }
+        });
+    </script>
+</body>
+</html>

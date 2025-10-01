@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Prova de {% for c in componentes %}{{ c.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}</title>
+    <style>
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print { 
+                display: none; 
+            }
+        }
+        body { 
+            font-family: 'Times New Roman', Times, serif; 
+            font-size: 12pt; 
+            line-height: 1.5; 
+            margin: 0;
+            padding: 0;
+        }
+        .container { 
+            width: 21cm; 
+            min-height: 29.7cm;
+            padding: 2cm;
+            margin: 1cm auto; 
+            box-sizing: border-box;
+        }
+        .cabecalho { 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center; 
+            border-bottom: 1px solid black; 
+            padding-bottom: 10px; 
+        }
+        .cabecalho .logos {
+            height: 60px;
+        }
+        .cabecalho .titulo {
+            flex-grow: 1;
+        }
+        .info-prova { margin: 20px 0; }
+        .info-prova p { margin: 5px 0; }
+        .questao { margin-bottom: 2em; page-break-inside: avoid; }
+        .questao-enunciado { font-weight: bold; }
+        .alternativas { list-style-type: upper-alpha; padding-left: 20px; margin: 0; }
+        img { max-width: 80%; height: auto; display: block; margin: 1em auto; }
+        hr { border: 0; border-top: 1px solid #ccc; margin: 2em 0; }
+        .button-link {
+            display: inline-block;
+            margin-top: 2em;
+            padding: 10px 20px;
+            font-size: 14pt;
+            font-family: sans-serif;
+            text-decoration: none;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cabecalho">
+            <img src="{% static 'images/logo.jpg' %}" alt="Logo Institucional" class="logos">
+            <div class="titulo">
+                <h2>AVALIAÇÃO INSTITUCIONAL</h2>
+                <h3>CURSO DE MEDICINA - UNIPÊ</h3>
+            </div>
+            <img src="{% static 'images/naped.jpg' %}" alt="Logo NAPED" class="logos">
+        </div>
+
+        <div class="info-prova">
+            <p><strong>Componente(s) Curricular(es):</strong> 
+                {% for c in componentes %}
+                    {{ c.nome }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </p>
+            <p><strong>Docente:</strong> _________________________________________________________</p>
+            <p><strong>Discente:</strong> _________________________________________________________</p>
+        </div>
+
+        <hr>
+
+        {% for questao in questoes_selecionadas %}
+            <div class="questao">
+                <p><strong>QUESTÃO {{ forloop.counter }}:</strong></p>
+                
+                {% if questao.texto_base %}
+                    <div class="texto-base">
+                        {{ questao.texto_base|linebreaksbr }}
+                    </div>
+                {% endif %}
+
+                {% if questao.imagem %}
+                    <img src="{{ questao.imagem.url }}" alt="Imagem da questão {{ forloop.counter }}">
+                {% endif %}
+                
+                <p class="questao-enunciado">{{ questao.enunciado|linebreaksbr }}</p>
+
+                <ol class="alternativas">
+                    {% for alternativa in questao.alternativas.all %}
+                        <li>{{ alternativa.texto }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% if not forloop.last %}
+                <hr>
+            {% endif %}
+        {% endfor %}
+        
+        <div class="no-print" style="text-align: center; display: flex; gap: 1em; justify-content: center;">
+            <button onclick="window.print()" class="button-link" style="background-color: #f0f0f0; cursor: pointer;">Imprimir Prova</button>
+            
+            <a href="{% url 'prova_gabarito' %}?ids={{ questao_ids|join:',' }}" target="_blank" class="button-link" style="background-color: #0056b3; color: white;">
+                Ver Gabarito
+            </a>
+        </div>
+    </div>
+</body>
+</html>

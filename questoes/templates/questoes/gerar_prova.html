@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerar Prova Integrada</title>
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .container { max-width: 600px; margin: auto; padding: 2em; border: 1px solid #ccc; border-radius: 8px; }
+        /* Aumentamos a altura dos seletores múltiplos para melhor usabilidade */
+        select[multiple] { height: 150px; }
+        select, button { width: 100%; padding: 10px; margin-top: 10px; }
+        .help-text { font-size: 0.8em; color: #555; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Provas Integradas</h1>
+        <p>Selecione um ou mais Períodos e, em seguida, um ou mais Componentes Curriculares para gerar a prova.</p>
+        
+        <form action="{% url 'prova_gerada' %}" method="GET" target="_blank">
+            <div>
+                <label for="periodos">Período(s):</label>
+                <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar mais de um.</p>
+                <select id="periodos" name="periodos" multiple>
+                    {% for p in periodos %}
+                        <option value="{{ p.id }}">{{ p.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="margin-top: 1em;">
+                <label for="componentes">Componente(s) Curricular(es):</label>
+                <p class="help-text">Segure Ctrl (ou Cmd no Mac) para selecionar mais de um.</p>
+                <select id="componentes" name="componentes" multiple required>
+                    <option value="" disabled>--- Selecione um ou mais períodos ---</option>
+                </select>
+            </div>
+            <button type="submit" style="margin-top: 2em;">Gerar Prova</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('periodos').addEventListener('change', function() {
+            // Pega todos os IDs dos períodos selecionados
+            const periodosSelecionados = Array.from(this.selectedOptions).map(option => option.value);
+            const seletorComponente = document.getElementById('componentes');
+            seletorComponente.innerHTML = '<option value="" disabled>--- Carregando... ---</option>';
+
+            if (periodosSelecionados.length > 0) {
+                // Junta os IDs em uma string separada por vírgula (ex: "1,2,3")
+                const idsQuery = periodosSelecionados.join(',');
+                // A URL da API agora aceitará múltiplos IDs
+                fetch(`/app/api/get-componentes/?periodo_ids=${idsQuery}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        seletorComponente.innerHTML = ''; // Limpa o seletor
+                        data.forEach(function(componente) {
+                            const option = new Option(componente.nome, componente.id);
+                            seletorComponente.add(option);
+                        });
+                    });
+            } else {
+                seletorComponente.innerHTML = '<option value="" disabled>--- Selecione um ou mais períodos ---</option>';
+            }
+        });
+    </script>
+</body>
+</html>
