@@ -44,6 +44,18 @@
         }
         .info-prova { margin: 20px 0; }
         .info-prova p { margin: 5px 0; }
+        
+        /* --- NOVO ESTILO PARA O TÍTULO DO COMPONENTE --- */
+        .componente-titulo {
+            background-color: #e0e0e0;
+            padding: 5px 10px;
+            margin-top: 2em;
+            margin-bottom: 1.5em;
+            font-size: 14pt;
+            text-align: center;
+            border: 1px solid #000;
+        }
+
         .questao { margin-bottom: 2em; page-break-inside: avoid; }
         .questao-enunciado { font-weight: bold; }
         .alternativas { list-style-type: upper-alpha; padding-left: 20px; margin: 0; }
@@ -85,6 +97,11 @@
         <hr>
 
         {% for questao in questoes_selecionadas %}
+            
+            {% ifchanged questao.componente %}
+                <h3 class="componente-titulo">COMPONENTE CURRICULAR: {{ questao.componente.nome }}</h3>
+            {% endifchanged %}
+
             <div class="questao">
                 <p><strong>QUESTÃO {{ forloop.counter }}:</strong></p>
                 
@@ -107,13 +124,12 @@
                 </ol>
             </div>
             {% if not forloop.last %}
-                <hr>
+                <hr style="border-top: 1px dashed #ccc;">
             {% endif %}
         {% endfor %}
         
         <div class="no-print" style="text-align: center; display: flex; gap: 1em; justify-content: center;">
             <button onclick="window.print()" class="button-link" style="background-color: #f0f0f0; cursor: pointer;">Imprimir Prova</button>
-            
             <a href="{% url 'prova_gabarito' %}?ids={{ questao_ids|join:',' }}" target="_blank" class="button-link" style="background-color: #0056b3; color: white;">
                 Ver Gabarito
             </a>
