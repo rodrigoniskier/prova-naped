@@ -1,28 +1,22 @@
 # gerador_provas/settings.py
 
 from pathlib import Path
-import os # Importamos a biblioteca 'os' para ler variáveis de ambiente
+import os
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --- ALTERAÇÕES DE SEGURANÇA ---
-
-# 1. NUNCA deixe a chave secreta no código. Lemos de uma "variável de ambiente".
-# Se a variável não existir, usamos uma chave temporária (APENAS PARA EMERGÊNCIAS).
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-chave-temporaria-para-emergencia')
 
-# 2. DEBUG = False é a configuração de segurança MAIS IMPORTANTE.
-# Em modo de produção, o DEBUG deve ser SEMPRE False.
-DEBUG = False
+DEBUG = True # Mantenha True no Codespaces, mudaremos para False antes do deploy final
 
-# 3. ALLOWED_HOSTS define quais domínios podem acessar sua aplicação.
-# Adicionamos o futuro endereço do PythonAnywhere aqui.
-ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1', '.github.dev']
 
 
 # Application definition
 INSTALLED_APPS = [
+    # --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
+    # Adicionamos o 'jazzmin' ANTES do admin do Django. A ordem é importante.
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,9 +56,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'gerador_provas.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -72,9 +63,6 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
     { 'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
@@ -82,31 +70,38 @@ AUTH_PASSWORD_VALIDATORS = [
     { 'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', },
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/5.0/topics/i18n/
 LANGUAGE_CODE = 'pt-br'
 TIME_ZONE = 'America/Recife'
 USE_I18N = True
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = 'static/'
-# 4. Adicionamos STATIC_ROOT para dizer ao Django onde juntar todos os arquivos estáticos.
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-
-# Media files (User uploads)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configurações de segurança para ambiente de produção com proxy (como o PythonAnywhere)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com']
+CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com', 'https://*.github.dev']
+
+
+# --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
+# Adicionamos as configurações de aparência do Jazzmin.
+JAZZMIN_SETTINGS = {
+    # Título da sua janela de login do admin (ex: "Entrar | Gerador de Provas")
+    "site_title": "Gerador de Provas",
+
+    # Texto no topo da página de login e do painel
+    "site_header": "Gerador de Provas UNIPÊ",
+
+    # Texto no canto superior esquerdo (substituído pelo logo se definido)
+    "site_brand": "Medicina UNIPÊ",
+
+    # Caminho para o logo (relativo à pasta 'static/')
+    "site_logo": "images/naped.jpg",
+
+    # Texto de boas-vindas na tela de login
+    "welcome_sign": "Bem-vindo ao Gerador de Provas do curso de Medicina",
+}
