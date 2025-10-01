@@ -7,14 +7,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-chave-temporaria-para-emergencia')
 
-DEBUG = True 
+# DEBUG = False # Manteremos como False para o ambiente de produção
+# Para testar no Codespaces, você pode mudar temporariamente para True
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+
 
 ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1', '.github.dev']
 
 
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin', # Jazzmin deve vir antes do admin
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -85,25 +88,32 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com', 'https://*.github.dev']
 
 
-# --- CONFIGURAÇÕES AVANÇADAS DO JAZZMIN ---
+# --- CONFIGURAÇÕES DO JAZZMIN ATUALIZADAS ---
 
 JAZZMIN_SETTINGS = {
     "site_title": "Gerador de Provas",
     "site_header": "Gerador Provas",
     "site_brand": "Medicina UNIPÊ",
+    
+    # Logo para o painel interno (canto superior esquerdo)
     "site_logo": "images/naped.jpg",
+
+    # --- ALTERAÇÃO 1: LOGO DA TELA DE LOGIN ---
+    # Especificamos o 'logo.jpg' para a tela de login.
     "login_logo": "images/logo.jpg",
+
+    # --- ALTERAÇÃO 2: TAMANHO MÁXIMO DO LOGO ---
+    # Controlamos o tamanho do logo na tela de login para que não fique gigante.
+    # Ajuste o valor '250px' se desejar um tamanho diferente.
+    "login_logo_max_size": "250px",
+
     "welcome_sign": "Bem-vindo ao Gerador de Provas do curso de Medicina",
     "copyright": "Medicina UNIPÊ",
     
-    # Esta linha diz ao Jazzmin para carregar um arquivo CSS personalizado.
     "custom_css": "css/admin_custom.css",
 }
 
 JAZZMIN_UI_TWEAKS = {
-    # Usamos um tema escuro como base, que combina melhor com o gradiente.
     "theme": "darkly",
-    
-    # Esta é a parte importante: adicionamos a classe 'gradient-bg' ao corpo do admin.
     "body_classes": "gradient-bg",
 }

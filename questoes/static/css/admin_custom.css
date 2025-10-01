@@ -1,4 +1,4 @@
-/* novo arquivo: questoes/static/css/admin_custom.css */
+/* arquivo: questoes/static/css/admin_custom.css */
 
 /* Aplica o fundo em gradiente ao corpo da página do admin */
 body.gradient-bg {
@@ -25,4 +25,15 @@ body.gradient-bg .login-box {
 .login-logo img {
     max-height: 100px;
     width: auto;
+}
+
+
+/* --- ALTERAÇÃO PRINCIPAL DESTE PASSO --- */
+/* Estilos para criar o card branco para o logo na tela de login */
+body.login-page .login-logo {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    display: inline-block; /* Faz o fundo se ajustar ao conteúdo */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
