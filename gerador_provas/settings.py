@@ -18,7 +18,7 @@ DEBUG = False
 
 # 3. ALLOWED_HOSTS define quais domínios podem acessar sua aplicação.
 # Adicionamos o futuro endereço do PythonAnywhere aqui.
-ALLOWED_HOSTS = ['SEU-NOME-DE-USUARIO.pythonanywhere.com', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1']
 
 
 # Application definition
