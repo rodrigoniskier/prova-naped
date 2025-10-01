@@ -7,7 +7,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-chave-temporaria-para-emergencia')
 
-# Lembre-se de mudar para False antes do deploy final, se estiver testando no Codespaces.
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 ALLOWED_HOSTS = ['rodrigoniskier.pythonanywhere.com', 'localhost', '127.0.0.1', '.github.dev']
@@ -25,7 +24,6 @@ INSTALLED_APPS = [
     'questoes.apps.QuestoesConfig',
 ]
 
-# ... (Middleware, Root_URLConf, Templates, WSGI, Databases, Auth_Password_Validators - sem alterações) ...
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -78,9 +76,9 @@ STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # --- ALTERAÇÃO PRINCIPAL DESTE PASSO ---
-# Adicionamos esta linha para dizer ao Django onde encontrar a pasta 'static' da nossa app.
+# Mudamos a forma como o caminho é construído para ser mais explícito.
 STATICFILES_DIRS = [
-    BASE_DIR / 'questoes/static',
+    os.path.join(BASE_DIR, 'questoes/static'),
 ]
 
 
@@ -88,10 +86,12 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# ... (Jazzmin Settings e UI Tweaks - sem alterações) ...
+
+# Configurações de segurança e Jazzmin
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 CSRF_TRUSTED_ORIGINS = ['https://*.pythonanywhere.com', 'https://*.github.dev']
 JAZZMIN_SETTINGS = {
