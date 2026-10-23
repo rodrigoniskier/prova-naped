@@ -1,0 +1,53 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+{% block extrastyle %}{{ block.super }}<style>
+.importacao {max-width:1100px} .importacao table{width:100%;margin:1em 0}.importacao th,.importacao td{padding:.65em;vertical-align:top}.importacao label{display:inline-block;margin:.5em .3em}.importacao button{margin:.4em;padding:.5em}.importacao .erro{border:2px solid #c33;padding:1em}.importacao pre{white-space:pre-wrap;font:inherit}.importacao .preview{max-height:14em;overflow:auto;white-space:pre-wrap}.importacao select{max-width:100%}
+</style>{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Início</a> › {{ title }}</div>{% endblock %}
+{% block content %}<div class="importacao">
+<p>Copie questões entre componentes do mesmo semestre letivo ativo. As originais permanecem intactas; as cópias entram pendentes de validação. Limite: 500 questões por operação.</p>
+{% if erros %}<div class="erro" role="alert">{{ erros }}</div>{% endif %}
+{% if resultado %}
+<h2>Importação concluída</h2><p>{{ resultado.importadas }} importadas; {{ resultado.ignoradas }} ignoradas (já importadas); 0 erros.</p>
+<a href="{% url 'admin:questoes_questao_changelist' %}">Consultar questões</a> · <a href="?">Nova importação</a>
+{% elif confirmacao %}
+<h2>Confirmar importação</h2>
+<p>Semestre: <strong>{{ escolha.semestre }}</strong>. Doador: <strong>{{ escolha.doador }}</strong>. Receptor: <strong>{{ escolha.receptor }}</strong>.</p>
+<p><strong>{{ selecionadas|length }} questões selecionadas.</strong> As que já tiverem recibo de importação para este receptor serão ignoradas, inclusive se a cópia anterior tiver sido excluída. Imagens serão copiadas para arquivos independentes.</p>
+<ul>{% for questao in exemplos %}<li>#{{ questao.pk }} — {{ questao.enunciado|truncatechars:180 }}</li>{% endfor %}</ul>
+{% if selecionadas|length > 50 %}<p>Mostrando as primeiras 50 questões selecionadas.</p>{% endif %}
+<form method="post">{% csrf_token %}
+<input type="hidden" name="semestre" value="{{ escolha.semestre.pk }}"><input type="hidden" name="doador" value="{{ escolha.doador.pk }}"><input type="hidden" name="receptor" value="{{ escolha.receptor.pk }}"><input type="hidden" name="estado" value="{{ estado }}">
+<button type="submit" name="acao" value="importar" class="default">Importar questões</button>
+<button type="submit" name="acao" value="voltar">Voltar à seleção</button>
+</form>
+{% else %}
+<details {% if not pagina_obj %}open{% endif %}><summary>1 e 2 — Semestre e componente doador</summary>
+<p>Carregue primeiro o semestre e depois escolha o doador. Alterar este contexto inicia uma nova seleção.</p>
+<form method="get" id="contexto-importacao">{{ contexto_form.semestre.errors }}{{ contexto_form.semestre.label_tag }} {{ contexto_form.semestre }}
+{{ contexto_form.doador.errors }}{{ contexto_form.doador.label_tag }} {{ contexto_form.doador }}
+<button type="submit">Carregar componentes / questões</button></form>
+<p>Se não houver semestres ativos, cadastre o semestre, associe seus componentes e ative-o na administração. O período do curso não substitui o semestre letivo.</p>
+</details>
+{% if reiniciar %}<a href="?">Recarregar seleção</a>{% endif %}
+{% if pagina_obj %}
+<h2>3 — Selecionar questões de {{ escolha.doador }}</h2><p>Semestre: {{ escolha.semestre }}.</p>
+<form method="post" id="selecao-importacao">{% csrf_token %}
+<input type="hidden" name="semestre" value="{{ escolha.semestre.pk }}"><input type="hidden" name="doador" value="{{ escolha.doador.pk }}"><input type="hidden" name="estado" value="{{ estado }}">
+<label for="busca">Buscar no enunciado ou texto-base</label><input id="busca" name="busca" maxlength="200" value="{{ busca }}">
+<label for="status">Status</label><select name="status" id="status"><option value="">Todos</option>{% for valor, rotulo in status_choices %}<option value="{{ valor }}" {% if status_filtro == valor %}selected{% endif %}>{{ rotulo }}</option>{% endfor %}</select>
+<button type="submit" name="acao" value="filtrar">Filtrar e manter seleção</button>
+<p><button type="submit" name="acao" value="selecionar_filtradas">Selecionar todas do filtro (até 500)</button><button type="submit" name="acao" value="limpar_todas">Desmarcar todas, inclusive outras páginas</button></p>
+<p><button type="button" data-selecao="todas">Selecionar todas desta página</button><button type="button" data-selecao="nenhuma">Desmarcar todas desta página</button>
+<strong id="contador-selecao" aria-live="polite" data-fora="{{ selecionadas|length }}" data-visiveis="{{ selecionadas_visiveis }}">{{ selecionadas|length }} selecionadas</strong></p>
+<p>A seleção é preservada ao usar os botões de filtro e paginação deste formulário. Os botões de seleção atuam nas 25 questões da página atual.</p>
+<table><thead><tr><th>Selecionar</th><th>ID</th><th>Enunciado / texto-base</th><th>Status</th></tr></thead><tbody>
+{% for questao in pagina_obj %}<tr><td><input type="checkbox" name="marcadas" value="{{ questao.pk }}" aria-label="Selecionar questão {{ questao.pk }}" {% if questao.pk in selecionadas %}checked{% endif %}></td><td>#{{ questao.pk }}</td><td><div class="preview">{{ questao.enunciado }}</div>{% if questao.texto_base %}<details><summary>Texto-base</summary><div class="preview">{{ questao.texto_base }}</div></details>{% endif %}{% if questao.imagem %}<a href="{{ questao.imagem.url }}" target="_blank" rel="noopener">Ver imagem</a>{% endif %}</td><td>{{ questao.get_status_display }}</td></tr>
+{% empty %}<tr><td colspan="4">Nenhuma questão encontrada.</td></tr>{% endfor %}</tbody></table>
+<p>{{ pagina_obj.paginator.count }} questões no filtro. Página {{ pagina_obj.number }} de {{ pagina_obj.paginator.num_pages }}.</p>
+<label for="pagina">Ir para página</label><input type="number" id="pagina" name="pagina" min="1" max="{{ pagina_obj.paginator.num_pages }}" value="{{ pagina_obj.number }}"><button type="submit" name="acao" value="pagina">Ir e manter seleção</button>
+<h2>4 — Componente receptor</h2>{{ contexto_form.receptor.errors }}{{ contexto_form.receptor.label_tag }} {{ contexto_form.receptor }}
+<h2>5 — Revisar a operação</h2><button type="submit" name="acao" value="confirmar" class="default">Revisar importação</button>
+</form>
+{% endif %}{% endif %}</div>{% endblock %}
+{% block extrajs %}{{ block.super }}<script src="{% static 'questoes/importacao.js' %}" defer></script>{% endblock %}

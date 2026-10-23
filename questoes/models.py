@@ -1,6 +1,22 @@
 # Endereço do arquivo: questoes/models.py
 
+from django.conf import settings
 from django.db import models
+
+
+class SemestreLetivo(models.Model):
+    nome = models.CharField(max_length=100, unique=True, help_text="Ex: 2026.2")
+    ativo = models.BooleanField(default=False)
+    componentes = models.ManyToManyField(
+        'ComponenteCurricular', related_name='semestres_letivos', blank=True,
+    )
+
+    class Meta:
+        ordering = ['-nome']
+        verbose_name = 'semestre letivo'
+
+    def __str__(self):
+        return self.nome
 
 # Documentação:
 # Este modelo representa os períodos do curso (ex: 1º Período, 2º Período).
@@ -55,3 +71,32 @@ class Alternativa(models.Model):
 
     def __str__(self):
         return self.texto
+
+
+class ImportacaoQuestao(models.Model):
+    """Recibo permanente: exclusões não apagam a identidade da importação."""
+
+    origem = models.ForeignKey(
+        Questao, on_delete=models.SET_NULL, null=True, related_name='importacoes',
+    )
+    origem_identificador = models.PositiveBigIntegerField(editable=False)
+    componente_origem = models.CharField(max_length=200, editable=False)
+    copia = models.OneToOneField(
+        Questao, on_delete=models.SET_NULL, null=True, related_name='importacao',
+    )
+    receptor = models.ForeignKey(ComponenteCurricular, on_delete=models.PROTECT)
+    semestre = models.ForeignKey(SemestreLetivo, on_delete=models.PROTECT)
+    responsavel = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'registro de importação'
+        verbose_name_plural = 'registros de importação'
+        permissions = [('importar_questoes', 'Pode importar questões entre componentes')]
+        constraints = [models.UniqueConstraint(
+            fields=['origem_identificador', 'receptor'],
+            name='questao_origem_receptor_unicos',
+        )]
+
+    def __str__(self):
+        return f'Questão {self.origem_identificador} → {self.receptor}'

@@ -1,7 +1,18 @@
 # questoes/admin.py
 
 from django.contrib import admin
-from .models import Periodo, ComponenteCurricular, Questao, Alternativa
+from django.urls import path
+
+from .importacao_admin import importar_view
+from .models import (
+    Alternativa,
+    ComponenteCurricular,
+    ImportacaoQuestao,
+    Periodo,
+    Questao,
+    SemestreLetivo,
+)
+
 
 # Documentação:
 # A classe 'AlternativaInline' permite que as alternativas sejam visualizadas
@@ -51,3 +62,36 @@ admin.site.register(ComponenteCurricular)
 
 # O modelo Alternativa não precisa ser registrado separadamente,
 # pois ele já é gerenciável através da QuestaoAdmin.
+
+
+@admin.register(SemestreLetivo)
+class SemestreLetivoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'ativo')
+    list_filter = ('ativo',)
+    filter_horizontal = ('componentes',)
+    search_fields = ('nome',)
+
+
+@admin.register(ImportacaoQuestao)
+class ImportacaoQuestaoAdmin(admin.ModelAdmin):
+    list_display = ('origem_identificador', 'copia', 'receptor', 'semestre', 'responsavel', 'criada_em')
+    list_select_related = ('copia', 'receptor__periodo', 'semestre', 'responsavel')
+    list_filter = ('semestre', 'receptor')
+    readonly_fields = tuple(field.name for field in ImportacaoQuestao._meta.fields)
+    change_list_template = 'admin/questoes/importacaoquestao/change_list.html'
+    actions = None
+
+    def get_urls(self):
+        return [path('importar/', self.admin_site.admin_view(self.importar), name='questoes_importar')] + super().get_urls()
+
+    def importar(self, request):
+        return importar_view(request, admin_site=self.admin_site)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
