@@ -34,6 +34,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 ROOT_URLCONF = 'gerador_provas.urls'
+LOGIN_REDIRECT_URL = 'admin:index'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -104,6 +105,14 @@ JAZZMIN_SETTINGS = {
     "welcome_sign": "Bem-vindo ao Gerador de Provas do curso de Medicina",
     "copyright": "Medicina UNIPÊ",
     "custom_css": "css/admin_custom.css",
+    "custom_links": {
+        "questoes": [{
+            "name": "Importação de Questões entre Componentes",
+            "url": "admin:questoes_importar",
+            "icon": "fas fa-copy",
+            "permissions": ["questoes.importar_questoes", "questoes.view_questao", "questoes.add_questao"],
+        }],
+    },
 }
 JAZZMIN_UI_TWEAKS = {
     "theme": "darkly",
