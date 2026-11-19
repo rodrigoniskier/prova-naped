@@ -13,7 +13,7 @@ entre componentes curriculares.
 
 **Tecnologias.** Python, Django 5.2, SQL, Jazzmin (admin), GitHub Actions, PythonAnywhere.
 
-**Qualidade e evidências.** 41 funções de teste automatizadas; CI em Python 3.12 e 3.13 com verificação de migrações, testes e teste de navegador; documentação de importação e de deploy em `docs/`.
+**Qualidade e evidências.** 41 funções de teste automatizadas; CI em Python 3.12 e 3.13 com verificação de migrações, testes e teste de navegador; documentação de importação e de deploy em `docs/`. Licença MIT.
 
 ## Estrutura
 
